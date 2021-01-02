@@ -13,6 +13,10 @@
     <export function="addMoverObject" type="client" />
     <export function="addMoverObject" type="server" />
 
+    <file src="files/move.png" />
+    <file src="files/rotate.png" />
+    <file src="files/save.png" />
+	<file src="files/scale.png" />
 
     <oop>true</oop>
 
