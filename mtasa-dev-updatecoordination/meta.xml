@@ -12,10 +12,8 @@
 
     <script cache="false" type="client" src="main.lua" />
     <script cache="false" type="client" src="client.lua" />
-    <script cache="false" type="server" src="server.lua" />
     
     <export function="addMoverObject" type="client" />
-    <export function="addMoverObject" type="server" />
 
     <file src="files/move.png" />
     <file src="files/rotate.png" />

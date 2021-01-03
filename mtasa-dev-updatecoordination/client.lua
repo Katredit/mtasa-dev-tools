@@ -1,7 +1,5 @@
 local sx , sy   = guiGetScreenSize()
-local object    = createObject(1609 , 0 , 0 , 3)
 objects = {}
-objects['obje'] = object
 local state     = 1
 local lastClick = getTickCount()
 
@@ -41,32 +39,16 @@ states = {
     }
 }
 
--- for k , v in ipairs({"x" , "y" , "z"}) do 
+function addMoverObject(obj)
+	object = obj
+	objects['obje'] = object
+	addEventHandler('onClientRender', getRootElement(), draw)
+end
+addEvent('mover.object',true)
+addEventHandler('mover.object', getRootElement(), addMoverObject)
 
---     for i = 1 , 3 do 
-
---         states[i].image[v[i]] = states[i].image["main"]
-
---     end
-
--- end
-
--- function addMoverObject(updateobject)
---     if object then return end
---     triggerServerEvent("addMoverObject" , root , updateobject)
--- end
-
--- function addMoveObject(updateobject)
---     object = updateobject
-
-
-
--- end
--- addEvent("addMoveObject" , true)
--- addEventHandler("addMoveObject" , root , addMoveObject)
-
-setTimer(function()
-
+function draw()
+    showCursor(true)
     local x , y = getScreenFromWorldPosition(object.position)
     local ox , oy , oz = getElementPosition(object)
     oz = oz + 1
@@ -82,6 +64,12 @@ setTimer(function()
                 if getKeyState("mouse1") and lastClick < getTickCount() then 
                     lastClick = getTickCount() + 200
                     state = i
+
+                    if state == 4 then
+                    	removeEventHandler("onClientRender", getRootElement(), draw) 
+                    	showCursor(false)
+                    end
+
                 end
 
                 size = 24
@@ -109,17 +97,21 @@ setTimer(function()
                         roundedRectangle(x , y , size , size , tocolor(0 , 0 , 0 , 100))
                         dxDrawImage(x + (size-16)/2 , y + (size-16)/2 , 16 , 16 , states[state].image.main)
 
-                        if isMouseInPosition(x , y , size , size) and getKeyState("mouse1") and lastClick < getTickCount() then
-
+                         if isMouseInPosition(x , y , size , size) and getKeyState("mouse1") and lastClick < getTickCount() then
                             lastCoordinate = "last"..string.upper(v:gsub("l" , ""))
-                            lastMode = "setElementPosition(objects['obje'],"
+                            if state == 1 then
+                             lastMode = "setElementPosition(objects['obje'],"
+                            elseif state == 2 then
+                             lastMode = "setElementRotation(objects['obje'],"
+                            elseif state == 3 then
+                             lastMode = "setObjectScale(objects['obje'],"
+                            end
                             lastCX, lastCY = getCursorPosition()
                             lastX , lastY , lastZ = ox , oy , oz-1
 
                             lastClick = getTickCount() + 200
 
                         end
-
                     end
 
                 end
@@ -129,12 +121,7 @@ setTimer(function()
         end
 
     end
-
-end , 0 , 0)
-
-bindKey("m" , "down" , function()
-    showCursor(not isCursorShowing())
-end)
+end
 
 function cursorMove( x , y )
 
