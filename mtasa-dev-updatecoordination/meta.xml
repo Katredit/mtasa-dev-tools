@@ -4,12 +4,16 @@
 
         Katredit - Bekiroj
 
-        MTA:SA Developer Update Coordinator
+        MTA:SA Developer Tools
+
+        Object Mover
 
     -->
 
-    <script type="client" src="client.lua" />
-    <script type="server" src="server.lua" />
+    <script cache="false" type="client" src="main.lua" />
+    <script cache="false" type="client" src="client.lua" />
+    <script cache="false" type="server" src="server.lua" />
+    
     <export function="addMoverObject" type="client" />
     <export function="addMoverObject" type="server" />
 
