@@ -68,16 +68,16 @@ function draw()
                     lastClick = getTickCount() + 200
                     state = i
                     if state == 1 then
-						lastX , lastY , lastZ = ox , oy , oz-1
-					elseif state == 2 then
-						lastX , lastY , lastZ = rx , ry , rz
-					elseif state == 3 then
-						lastX , lastY , lastZ = mx , my , mz
-					elseif state == 4 then
-						state = 0
+			lastX , lastY , lastZ = ox , oy , oz-1
+		    elseif state == 2 then
+			lastX , lastY , lastZ = rx , ry , rz
+		    elseif state == 3 then
+			lastX , lastY , lastZ = mx , my , mz
+		    elseif state == 4 then
+			state = 0
                     	removeEventHandler("onClientRender", getRootElement(), draw) 
                     	showCursor(false)
-					end
+		    end
                 end
 
                 size = 24
