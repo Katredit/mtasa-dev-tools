@@ -38,21 +38,26 @@ states = {
     }
 }
 
+mods = {
+    [1] = "setElementPosition",
+    [2] = "setElementRotation",
+    [3] = "setObjectScale",
+}
+
 function addMoverObject(obj)
 	if obj then
-		object = obj
-		addEventHandler('onClientRender', getRootElement(), draw)
+        object = obj
+        states["object"] = object
+		addEventHandler('onClientPreRender', getRootElement(), draw)
 	end
 end
-addEvent('mover.object',true)
-addEventHandler('mover.object', getRootElement(), addMoverObject)
+addEvent('mover.AddObject',true)
+addEventHandler('mover.AddObject', getRootElement(), addMoverObject)
+
 
 function draw()
-    showCursor(true)
     local x , y = getScreenFromWorldPosition(object.position)
     local ox , oy , oz = getElementPosition(object)
-    local rx, ry, rz = getElementRotation(object)
-    local mx, my, mz = getObjectScale(object)
 
     oz = oz + 1
     
@@ -64,24 +69,26 @@ function draw()
 
             if isMouseInPosition(x , y , size , size) then
 
-                if getKeyState("mouse1") and lastClick < getTickCount() then 
-                    lastClick = getTickCount() + 200
+                if getKeyState("mouse1") and lastClick then 
+                    lastClick = false
                     state = i
-                    if state == 1 then
-			lastX , lastY , lastZ = ox , oy , oz-1
-		    elseif state == 2 then
-			lastX , lastY , lastZ = rx , ry , rz
-		    elseif state == 3 then
-			lastX , lastY , lastZ = mx , my , mz
-		    elseif state == 4 then
-			state = 0
-                    	removeEventHandler("onClientRender", getRootElement(), draw) 
+
+                    if state == 4 then
+                        state = 0
+                        removeEventHandler("onClientPreRender", getRootElement(), draw) 
                     	showCursor(false)
-		    end
+                    return end
+
+                    lastMode = mods[state]
+
                 end
 
                 size = 24
 
+            end
+
+            if not getKeyState("mouse1") then
+                lastClick = true
             end
 
             roundedRectangle(x , y , size , size , i==state and states[i].color or tocolor(0 , 0 , 0 , 100))
@@ -104,10 +111,10 @@ function draw()
 	                        dxDrawLine3D(ox , oy , oz , lx , ly , lz)
 	                        roundedRectangle(x , y , size , size , tocolor(0 , 0 , 0 , 100))
 	                        dxDrawImage(x + (size-16)/2 , y + (size-16)/2 , 16 , 16 , states[state].image.main)
-	                        if isMouseInPosition(x , y , size , size) and getKeyState("mouse1") and lastClick < getTickCount() then
-	                            lastCoordinate = "last"..string.upper(v:gsub("l" , ""))
+	                        if isMouseInPosition(x , y , size , size) and getKeyState("mouse1") and lastClick then
+	                            lastCoordinate = string.lower(v:gsub("l" , ""))..string.lower(v:gsub("l" , ""))
 	                            lastCX, lastCY = getCursorPosition()
-	                            lastClick = getTickCount() + 200
+	                            lastClick = false
 	                        end
 	                    end
                     end
@@ -121,19 +128,40 @@ function draw()
     end
 end
 
+
 function move( x , y )
+
     if not getKeyState("mouse1") or y == lastCY or not lastCY then return end
+
     if state > 0 then
-	    local str = y < lastCY and "+" or "-"
-	    loadstring(lastCoordinate.." = "..lastCoordinate.." "..str.." 0.05")()
-	    if state == 1 then
-	    	setElementPosition(object, lastX, lastY, lastZ)
-	    elseif state == 2 then
-	    	setElementRotation(object, lastX, lastY, lastZ)
-	    elseif state == 3 then
-	    	setObjectScale(object, lastX, lastY, lastZ)
-	    end
-	    lastCY = y
-	end
+        
+        local str = y < lastCY and "+" or "-"
+        local value = state == 2 and "0.15" or "0.05"
+
+        if state == 1 then
+            xx , yy , zz = getElementPosition(object)
+        elseif state == 2 then
+            xx , yy , zz = getElementRotation(object)
+        elseif state == 3 then
+            xx , yy , zz = getObjectScale(object)
+        end
+
+        loadstring(lastCoordinate.." = "..lastCoordinate.." "..str..value)()
+
+        loadstring(mods[state].."(object , xx , yy , zz)")()
+	    
+        lastCY = y
+        
+    end
+    
 end
 addEventHandler( "onClientCursorMove", getRootElement(), move)
+
+local obbjee = createObject(2942 , 2 , 2 , 2)
+addMoverObject(obbjee)
+
+bindKey("m" , "down" , function()
+
+    showCursor(not isCursorShowing())
+
+end)
