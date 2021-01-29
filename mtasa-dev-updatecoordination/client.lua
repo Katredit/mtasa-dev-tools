@@ -39,9 +39,9 @@ states = {
 }
 
 mods = {
-    [1] = "setElementPosition",
-    [2] = "setElementRotation",
-    [3] = "setObjectScale",
+    [1] = "etElementPosition",
+    [2] = "etElementRotation",
+    [3] = "etObjectScale",
 }
 
 function addMoverObject(obj)
@@ -146,9 +146,10 @@ function move( x , y )
             xx , yy , zz = getObjectScale(object)
         end
 
+        loadstring("xx , yy , zz = g"..mods[state].."(object)")
         loadstring(lastCoordinate.." = "..lastCoordinate.." "..str..value)()
 
-        loadstring(mods[state].."(object , xx , yy , zz)")()
+        loadstring("s"..mods[state].."(object , xx , yy , zz)")()
 	    
         lastCY = y
         
