@@ -44,10 +44,11 @@ mods = {
     [3] = "etObjectScale",
 }
 
-function addMoverObject(obj)
+function addMoverObject(obj , event , attachEvent)
 	if obj then
         object = obj
-        states["object"] = object
+        triggereventStr = event
+        triggerAttachEvent = attachEvent or event
 		addEventHandler('onClientPreRender', getRootElement(), draw)
 	end
 end
@@ -76,7 +77,8 @@ function draw()
                     if state == 4 then
                         state = 0
                         removeEventHandler("onClientPreRender", getRootElement(), draw) 
-                    	showCursor(false)
+                        showCursor(false)
+                        triggerEvent(tostring(triggereventStr) , localPlayer , object)
                     return end
 
                     lastMode = mods[state]
@@ -112,7 +114,7 @@ function draw()
 	                        roundedRectangle(x , y , size , size , tocolor(0 , 0 , 0 , 100))
 	                        dxDrawImage(x + (size-16)/2 , y + (size-16)/2 , 16 , 16 , states[state].image.main)
 	                        if isMouseInPosition(x , y , size , size) and getKeyState("mouse1") and lastClick then
-	                            lastCoordinate = string.lower(v:gsub("l" , ""))..string.lower(v:gsub("l" , ""))
+	                            lastCoordinate = string.lower(v:gsub("l" , ""))
 	                            lastCX, lastCY = getCursorPosition()
 	                            lastClick = false
 	                        end
@@ -147,7 +149,11 @@ function move( x , y )
         end
 
         loadstring("xx , yy , zz = g"..mods[state].."(object)")
-        loadstring(lastCoordinate.." = "..lastCoordinate.." "..str..value)()
+        loadstring(lastCoordinate..lastCoordinate.." = "..lastCoordinate..lastCoordinate.." "..str..value)()
+
+        if isElementAttached(object) and state ~= 3 then
+            triggerServerEvent("sirenMover" , root , localPlayer, object , lastCoordinate , state , str)
+        end
 
         loadstring("s"..mods[state].."(object , xx , yy , zz)")()
 	    
@@ -157,9 +163,6 @@ function move( x , y )
     
 end
 addEventHandler( "onClientCursorMove", getRootElement(), move)
-
-local obbjee = createObject(2942 , 2 , 2 , 2)
-addMoverObject(obbjee)
 
 bindKey("m" , "down" , function()
 
