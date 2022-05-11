@@ -61,7 +61,7 @@ function draw()
     local ox , oy , oz = getElementPosition(object)
 
     oz = oz + 1
-    
+
     if x and y then 
 
         for i=1, 4 do 
@@ -163,9 +163,3 @@ function move( x , y )
     
 end
 addEventHandler( "onClientCursorMove", getRootElement(), move)
-
-bindKey("m" , "down" , function()
-
-    showCursor(not isCursorShowing())
-
-end)
